@@ -1,0 +1,207 @@
+{
+  "errors": [
+    "Entry module not found: Error: Can't resolve './src/T5.js' in 'Z:\\CGSG\\Practice\\T5'\nresolve './src/T5.js' in 'Z:\\CGSG\\Practice\\T5'\n  using description file: Z:\\CGSG\\Practice\\T5\\package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: Z:\\CGSG\\Practice\\T5\\package.json (relative path: ./src/T3.js)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js doesn't exist\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js.json doesn't exist\n      as directory\n        Z:\\CGSG\\Practice\\T5\\src\\T3.js doesn't exist"
+  ],
+  "warnings": [],
+  "version": "4.43.0",
+  "hash": "a1bf77073baca1f22c28",
+  "time": 263,
+  "builtAt": 1591437164984,
+  "publicPath": "",
+  "outputPath": "Z:\\CGSG\\Practice\\T5\\dist",
+  "assetsByChunkName": {},
+  "assets": [
+    {
+      "name": "./index.html",
+      "size": 1034,
+      "chunks": [],
+      "chunkNames": [],
+      "info": {},
+      "emitted": true
+    }
+  ],
+  "filteredAssets": 0,
+  "entrypoints": {},
+  "namedChunkGroups": {},
+  "chunks": [],
+  "modules": [],
+  "filteredModules": 0,
+  "logging": {
+    "webpack.buildChunkGraph.visitModules": {
+      "entries": [],
+      "filteredEntries": 1,
+      "debug": false
+    }
+  },
+  "children": [
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "",
+      "outputPath": "Z:\\CGSG\\Practice\\T5\\dist",
+      "assetsByChunkName": {
+        "HtmlWebpackPlugin_0": "__child-HtmlWebpackPlugin_0"
+      },
+      "assets": [
+        {
+          "name": "__child-HtmlWebpackPlugin_0",
+          "size": 5315,
+          "chunks": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "chunkNames": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "info": {},
+          "emitted": false
+        }
+      ],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "HtmlWebpackPlugin_0": {
+          "chunks": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "assets": [
+            "__child-HtmlWebpackPlugin_0"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "HtmlWebpackPlugin_0": {
+          "chunks": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "assets": [
+            "__child-HtmlWebpackPlugin_0"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "chunks": [
+        {
+          "id": "HtmlWebpackPlugin_0",
+          "rendered": true,
+          "initial": true,
+          "entry": true,
+          "size": 1220,
+          "names": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "files": [
+            "__child-HtmlWebpackPlugin_0"
+          ],
+          "hash": "4cfb65aa8ed600f14696",
+          "siblings": [],
+          "parents": [],
+          "children": [],
+          "childrenByOrder": {},
+          "modules": [
+            {
+              "id": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
+              "identifier": "Z:\\CGSG\\Practice\\T5\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T5\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T5\\src\\index.html",
+              "name": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
+              "index": 0,
+              "index2": 0,
+              "size": 1220,
+              "cacheable": true,
+              "built": true,
+              "optional": false,
+              "prefetched": false,
+              "chunks": [
+                "HtmlWebpackPlugin_0"
+              ],
+              "issuer": null,
+              "issuerId": null,
+              "issuerName": null,
+              "issuerPath": null,
+              "failed": false,
+              "errors": 0,
+              "warnings": 0,
+              "assets": [],
+              "reasons": [
+                {
+                  "moduleId": null,
+                  "moduleIdentifier": null,
+                  "module": null,
+                  "moduleName": null,
+                  "type": "single entry",
+                  "userRequest": "Z:\\CGSG\\Practice\\T5\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T5\\src\\index.html",
+                  "loc": "HtmlWebpackPlugin_0"
+                }
+              ],
+              "providedExports": null,
+              "optimizationBailout": [],
+              "depth": 0,
+              "source": "// Module\nvar code = \"<html>\\r\\n    <head>\\r\\n        <title>DA2 T5</title>\\r\\n        <style>\\r\\nbody\\r\\n{\\r\\n  background-color: OldLace;\\r\\n  color: Coral;\\r\\n  font-family: \\\"Times New Roman\\\", Times, serif;\\r\\n}\\r\\n\\r\\nh1\\r\\n{\\r\\n  text-align: center;\\r\\n}\\r\\n\\r\\nimg\\r\\n{\\r\\n  height: 20px;\\r\\n  border: double DarkOrange 5px;\\r\\n  margin-top: 5px;\\r\\n  display: inline;\\r\\n}\\r\\n\\r\\np\\r\\n{\\r\\n  margin: 5px;\\r\\n  font-size: 20px;\\r\\n}\\r\\n\\r\\ninput[type=number]\\r\\n{\\r\\n  height: 30px;\\r\\n  text-align: center;\\r\\n  border: 3px solid rgb(242, 81, 22);\\r\\n  outline: none;\\r\\n  box-sizing: border-box;\\r\\n  padding: 7px 5px;\\r\\n  font-family: \\\"Courier New\\\", Courier, monospace;\\r\\n  font-size: 20px;\\r\\n  -moz-appearance: textfield;\\r\\n  -webkit-appearance: textfield;\\r\\n  transition: 0.5s;\\r\\n  background: Oldlace;\\r\\n}\\r\\n\\r\\ninput[type=number]:focus\\r\\n{\\r\\n  border-color: #3A1B0A;\\r\\n}\\r\\n        </style>\\r\\n    </head><body>\\r\\n        <h1 id=\\\"h1\\\">Loading...</h1>\\r\\n        <canvas id=\\\"wegl-canvas\\\" style=\\\"border: none;\\\" width=\\\"800\\\" height=\\\"800\\\"></canvas>\\r\\n        <br/>\\r\\n        <p>P - pause. 0 - go back to start position.</p>\\r\\n    </body>\\r\\n</html>\";\n// Exports\nmodule.exports = code;"
+            }
+          ],
+          "filteredModules": 0,
+          "origins": [
+            {
+              "module": "",
+              "moduleIdentifier": "",
+              "moduleName": "",
+              "loc": "HtmlWebpackPlugin_0",
+              "request": "Z:\\CGSG\\Practice\\T5\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T5\\src\\index.html",
+              "reasons": []
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "id": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
+          "identifier": "Z:\\CGSG\\Practice\\T5\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T5\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T5\\src\\index.html",
+          "name": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
+          "index": 0,
+          "index2": 0,
+          "size": 1220,
+          "cacheable": true,
+          "built": true,
+          "optional": false,
+          "prefetched": false,
+          "chunks": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "issuer": null,
+          "issuerId": null,
+          "issuerName": null,
+          "issuerPath": null,
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "assets": [],
+          "reasons": [
+            {
+              "moduleId": null,
+              "moduleIdentifier": null,
+              "module": null,
+              "moduleName": null,
+              "type": "single entry",
+              "userRequest": "Z:\\CGSG\\Practice\\T5\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T5\\src\\index.html",
+              "loc": "HtmlWebpackPlugin_0"
+            }
+          ],
+          "providedExports": null,
+          "optimizationBailout": [],
+          "depth": 0,
+          "source": "// Module\nvar code = \"<html>\\r\\n    <head>\\r\\n        <title>DA2 T5</title>\\r\\n        <style>\\r\\nbody\\r\\n{\\r\\n  background-color: OldLace;\\r\\n  color: Coral;\\r\\n  font-family: \\\"Times New Roman\\\", Times, serif;\\r\\n}\\r\\n\\r\\nh1\\r\\n{\\r\\n  text-align: center;\\r\\n}\\r\\n\\r\\nimg\\r\\n{\\r\\n  height: 20px;\\r\\n  border: double DarkOrange 5px;\\r\\n  margin-top: 5px;\\r\\n  display: inline;\\r\\n}\\r\\n\\r\\np\\r\\n{\\r\\n  margin: 5px;\\r\\n  font-size: 20px;\\r\\n}\\r\\n\\r\\ninput[type=number]\\r\\n{\\r\\n  height: 30px;\\r\\n  text-align: center;\\r\\n  border: 3px solid rgb(242, 81, 22);\\r\\n  outline: none;\\r\\n  box-sizing: border-box;\\r\\n  padding: 7px 5px;\\r\\n  font-family: \\\"Courier New\\\", Courier, monospace;\\r\\n  font-size: 20px;\\r\\n  -moz-appearance: textfield;\\r\\n  -webkit-appearance: textfield;\\r\\n  transition: 0.5s;\\r\\n  background: Oldlace;\\r\\n}\\r\\n\\r\\ninput[type=number]:focus\\r\\n{\\r\\n  border-color: #3A1B0A;\\r\\n}\\r\\n        </style>\\r\\n    </head><body>\\r\\n        <h1 id=\\\"h1\\\">Loading...</h1>\\r\\n        <canvas id=\\\"wegl-canvas\\\" style=\\\"border: none;\\\" width=\\\"800\\\" height=\\\"800\\\"></canvas>\\r\\n        <br/>\\r\\n        <p>P - pause. 0 - go back to start position.</p>\\r\\n    </body>\\r\\n</html>\";\n// Exports\nmodule.exports = code;"
+        }
+      ],
+      "filteredModules": 0,
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "HtmlWebpackCompiler"
+    }
+  ]
+}

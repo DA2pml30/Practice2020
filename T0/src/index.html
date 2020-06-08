@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>DA2 T3</title>
+        <style>
+body
+{
+  background-color: OldLace;
+  color: Coral;
+  font-family: "Times New Roman", Times, serif;
+}
+
+h1
+{
+  text-align: center;
+}
+
+img
+{
+  height: 20px;
+  border: double DarkOrange 5px;
+  margin-top: 5px;
+  display: inline;
+}
+
+p
+{
+  margin: 5px;
+  font-size: 20px;
+}
+
+input[type=number]
+{
+  height: 30px;
+  text-align: center;
+  border: 3px solid rgb(242, 81, 22);
+  outline: none;
+  box-sizing: border-box;
+  padding: 7px 5px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  transition: 0.5s;
+  background: Oldlace;
+}
+
+input[type=number]:focus
+{
+  border-color: #3A1B0A;
+}
+        </style>
+    </head><body>
+        <h1 id="h1">Loading...</h1>
+        <canvas id="wegl-canvas" style="border: none;" width="800" height="800"></canvas>
+        <br/>
+        <p>P - pause. 0 - go back to start position.
+          <input type="number" style="width: 200px;" placeholder="Max iterations:" value="" id="Iter"> Now: <span id="IterN"></span>
+        </p>
+    </body>
+</html>
