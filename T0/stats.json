@@ -1,14 +1,14 @@
 {
   "errors": [
-    "Entry module not found: Error: Can't resolve './src/T3.js' in 'Z:\\CGSG\\Practice\\T3'\nresolve './src/T3.js' in 'Z:\\CGSG\\Practice\\T3'\n  using description file: Z:\\CGSG\\Practice\\T3\\package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: Z:\\CGSG\\Practice\\T3\\package.json (relative path: ./src/T3.js)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js doesn't exist\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js.json doesn't exist\n      as directory\n        Z:\\CGSG\\Practice\\T3\\src\\T3.js doesn't exist"
+    "Entry module not found: Error: Can't resolve './src/T3.js' in 'Z:\\CGSG\\Practice\\T0'\nresolve './src/T3.js' in 'Z:\\CGSG\\Practice\\T0'\n  using description file: Z:\\CGSG\\Practice\\T0\\package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: Z:\\CGSG\\Practice\\T0\\package.json (relative path: ./src/T3.js)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js doesn't exist\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js.json doesn't exist\n      as directory\n        Z:\\CGSG\\Practice\\T0\\src\\T3.js doesn't exist"
   ],
   "warnings": [],
   "version": "4.43.0",
-  "hash": "c67b2171e36b09860970",
-  "time": 612,
-  "builtAt": 1591604358404,
+  "hash": "afa1caad5b4833695dd6",
+  "time": 348,
+  "builtAt": 1591612526853,
   "publicPath": "",
-  "outputPath": "Z:\\CGSG\\Practice\\T3\\dist",
+  "outputPath": "Z:\\CGSG\\Practice\\T0\\dist",
   "assetsByChunkName": {},
   "assets": [
     {
@@ -38,7 +38,7 @@
       "errors": [],
       "warnings": [],
       "publicPath": "",
-      "outputPath": "Z:\\CGSG\\Practice\\T3\\dist",
+      "outputPath": "Z:\\CGSG\\Practice\\T0\\dist",
       "assetsByChunkName": {
         "HtmlWebpackPlugin_0": "__child-HtmlWebpackPlugin_0"
       },
@@ -102,7 +102,7 @@
           "modules": [
             {
               "id": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
-              "identifier": "Z:\\CGSG\\Practice\\T3\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T3\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T3\\src\\index.html",
+              "identifier": "Z:\\CGSG\\Practice\\T0\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T0\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T0\\src\\index.html",
               "name": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
               "index": 0,
               "index2": 0,
@@ -129,7 +129,7 @@
                   "module": null,
                   "moduleName": null,
                   "type": "single entry",
-                  "userRequest": "Z:\\CGSG\\Practice\\T3\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T3\\src\\index.html",
+                  "userRequest": "Z:\\CGSG\\Practice\\T0\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T0\\src\\index.html",
                   "loc": "HtmlWebpackPlugin_0"
                 }
               ],
@@ -146,7 +146,7 @@
               "moduleIdentifier": "",
               "moduleName": "",
               "loc": "HtmlWebpackPlugin_0",
-              "request": "Z:\\CGSG\\Practice\\T3\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T3\\src\\index.html",
+              "request": "Z:\\CGSG\\Practice\\T0\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T0\\src\\index.html",
               "reasons": []
             }
           ]
@@ -155,7 +155,7 @@
       "modules": [
         {
           "id": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
-          "identifier": "Z:\\CGSG\\Practice\\T3\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T3\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T3\\src\\index.html",
+          "identifier": "Z:\\CGSG\\Practice\\T0\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T0\\node_modules\\html-loader\\dist\\cjs.js!Z:\\CGSG\\Practice\\T0\\src\\index.html",
           "name": "./node_modules/html-webpack-plugin/lib/loader.js!./src/index.html",
           "index": 0,
           "index2": 0,
@@ -182,7 +182,7 @@
               "module": null,
               "moduleName": null,
               "type": "single entry",
-              "userRequest": "Z:\\CGSG\\Practice\\T3\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T3\\src\\index.html",
+              "userRequest": "Z:\\CGSG\\Practice\\T0\\node_modules\\html-webpack-plugin\\lib\\loader.js!Z:\\CGSG\\Practice\\T0\\src\\index.html",
               "loc": "HtmlWebpackPlugin_0"
             }
           ],

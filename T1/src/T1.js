@@ -1,5 +1,3 @@
-import { mat4 } from 'gl-matrix';
-
 import vShaderStr from './T1.vert';
 import fShaderStr from './T1.frag';
 
@@ -11,18 +9,19 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 
-import HeightP from '../bin/Height.png';
 import CarM from '../bin/Car.glb';
 import Sky from '../bin/Skybox.hdr';
+import hash from '../../hash.txt';
 
 class Graphics {
   initThree () {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, this.W / this.H, 0.1, 1000);
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.W, this.H);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    document.body.appendChild(this.renderer.domElement);
+    document.getElementById('container').appendChild(this.renderer.domElement);
 
     this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     this.directionalLight.position.x = 1.98;
@@ -95,15 +94,16 @@ class Graphics {
         LP: null,
         RP: null,
         LZ: null,
-        RZ: null
+        RZ: null,
+        Y: 0,
+        Angle: 0
       },
       A: 0,
       V: 0,
-      Angle: 0,
-      X: 0,
       XKey: 0,
-      Z: 0,
-      ZKey: 0
+      YKey: 0,
+      Pos: new THREE.Vector3(0, 0, 0),
+      Rotate: 0
     };
   }
 
@@ -137,7 +137,7 @@ class Graphics {
       }
 
       T.scene.add(gltf.scene);
-      T.controls.target = T.Car.Model.position;
+      T.Car.Model.matrixAutoUpdate = false;
     }, undefined, function (error) {
       alert(error);
       console.error(error);
@@ -184,7 +184,7 @@ class Graphics {
     });
 
     this.stats = new Stats();
-    document.body.appendChild(this.stats.dom);
+    document.getElementById('container').appendChild(this.stats.dom);
   }
 
   moveCar () {
@@ -192,27 +192,44 @@ class Graphics {
       return;
     }
 
-    this.Car.A = this.Car.XKey * 5 - Math.max(Math.min(this.Car.V, 1.0), -1.0);
-    this.Car.V = Math.max(Math.min(this.Car.A * this.DeltaT + this.Car.V, 10.0), -10.0);
+    this.Car.A = this.Car.XKey * 5 - Math.max(Math.min(this.Car.V, 2.0), -2.0);
+    this.Car.V = Math.max(Math.min(this.Car.A * this.DeltaT + this.Car.V, 50.0), -10.0);
 
-    this.Car.Wheels.LP.rotateZ(this.Car.Angle);
-    this.Car.Wheels.RP.rotateZ(-this.Car.Angle);
-    this.Car.Wheels.LZ.rotateZ(this.Car.Angle);
-    this.Car.Wheels.RZ.rotateZ(-this.Car.Angle);
+    // Rotate wheels
+    this.Car.Wheels.LP.rotateZ(-this.Car.Wheels.Angle);
+    this.Car.Wheels.RP.rotateZ(this.Car.Wheels.Angle);
+    this.Car.Wheels.LZ.rotateZ(-this.Car.Wheels.Angle);
+    this.Car.Wheels.RZ.rotateZ(this.Car.Wheels.Angle);
 
-    this.Car.Angle += this.Car.V * this.DeltaT;
+    this.Car.Wheels.Angle += this.Car.V * this.DeltaT;
 
-    if (this.Car.Z != this.Car.ZKey) {
-      const dZ = (this.Car.ZKey - this.Car.Z) * this.DeltaT;
-      this.Car.Wheels.LP.rotateY(-dZ);
-      this.Car.Wheels.RP.rotateY(-dZ);
-      this.Car.Z += dZ;
-    }
+    const dY = (this.Car.YKey - this.Car.Wheels.Y) * this.DeltaT * 3.0;
+    this.Car.Wheels.LP.rotateY(-dY);
+    this.Car.Wheels.RP.rotateY(-dY);
+    this.Car.Wheels.Y += dY;
 
-    this.Car.Wheels.LP.rotateZ(-this.Car.Angle);
-    this.Car.Wheels.RP.rotateZ(this.Car.Angle);
-    this.Car.Wheels.LZ.rotateZ(-this.Car.Angle);
-    this.Car.Wheels.RZ.rotateZ(this.Car.Angle);
+    this.Car.Wheels.LP.rotateZ(this.Car.Wheels.Angle);
+    this.Car.Wheels.RP.rotateZ(-this.Car.Wheels.Angle);
+    this.Car.Wheels.LZ.rotateZ(this.Car.Wheels.Angle);
+    this.Car.Wheels.RZ.rotateZ(-this.Car.Wheels.Angle);
+
+    this.Car.Rotate = this.timeMs / 10.0;
+
+    // Mov car pos
+    const P = new THREE.Vector3(0, 0, -this.Car.V * this.DeltaT);
+    const Ya = new THREE.Vector3(0, 1, 0);
+    P.applyAxisAngle(Ya, this.Car.Rotate);
+    this.Car.Pos.add(P);
+    const M = new THREE.Matrix4();
+
+    this.Car.Model.matrix.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z);
+    M.makeRotationY(this.Car.Rotate);
+
+    this.Car.Model.matrix.multiply(M);
+
+    // this.camera.lookAt(this.Car.Pos);
+    this.camera.position.add(P);
+    this.controls.target.copy(this.Car.Pos);
   }
 
   drawScene () {
@@ -233,6 +250,10 @@ class Graphics {
     this.globalMs = Date.now() / 1000;
     this.W = window.innerWidth;
     this.H = window.innerHeight;
+
+    const p = document.getElementById('info');
+    p.innerHTML = '<a href="https://github.com/DA2pml30/Practice2020">Github</a>, hash:<span id="Hash"></span>';
+    document.getElementById('Hash').innerHTML = hash;
 
     this.initThree();
     this.initHeightmap(HeightP, VSText, FSText);
@@ -263,8 +284,8 @@ class Graphics {
       }
 
       if (e.keyCode >= 37 && e.keyCode <= 40) {
-        T.Car.ZKey += (e.keyCode == 39) - (e.keyCode == 37);
-        T.Car.XKey += (e.keyCode == 38) - (e.keyCode == 40);
+        T.Car.YKey += (e.keyCode == 39) - (e.keyCode == 37);
+        T.Car.XKey += (e.keyCode == 38) - (e.keyCode == 40) * 0.4;
       } else if (e.keyCode == 80) {
         T.IsNPause = !T.IsNPause;
       }
@@ -272,14 +293,24 @@ class Graphics {
 
     document.onkeyup = function (e) {
       if (e.keyCode >= 37 && e.keyCode <= 40) {
-        T.Car.ZKey -= (e.keyCode == 39) - (e.keyCode == 37);
-        T.Car.XKey -= (e.keyCode == 38) - (e.keyCode == 40);
+        T.Car.YKey -= (e.keyCode == 39) - (e.keyCode == 37);
+        T.Car.XKey -= (e.keyCode == 38) - (e.keyCode == 40) * 0.4;
       }
     };
+
+    window.addEventListener('resize', function () {
+      T.camera.aspect = window.innerWidth / window.innerHeight;
+      T.camera.updateProjectionMatrix();
+
+      T.W = window.innerWidth;
+      T.H = window.innerHeight;
+
+      T.renderer.setSize(T.W, T.H);
+    }, false);
   }
 }
 
-const Cars = new Graphics(vShaderStr, fShaderStr, HeightP, CarM, Sky);
+const Cars = new Graphics(vShaderStr, fShaderStr, '', CarM, Sky);
 
 function Run () {
   requestAnimationFrame(Run);

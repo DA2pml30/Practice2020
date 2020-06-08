@@ -6,6 +6,7 @@ import fShaderStr from './T0.frag';
 import * as dat from 'dat.gui';
 
 import GradP from '../bin/Grad.png';
+import hash from '../../hash.txt'
 
 class webGL {
   initGL = (canvas, VSText, FSText) => {
@@ -278,3 +279,8 @@ class webGL {
 }
 
 const Julia = new webGL(vShaderStr, fShaderStr, GradP);
+
+const p = document.createElement('p');
+p.innerHTML = '<a href="https://github.com/DA2pml30/Practice2020">Github</a>, git hash:<span id="Hash"></span>';
+document.body.appendChild(p);
+document.getElementById("Hash").innerHTML = hash;

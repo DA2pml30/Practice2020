@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './src/T3.js',
+  entry: './src/T0.js',
   output: {
     filename: 'index-bundles.js',
     path: path.resolve(__dirname, 'dist')
@@ -19,7 +19,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(glsl|vert|frag)$/,
+        test: /\.(glsl|vert|frag|txt)$/,
         use: {
           loader: 'raw-loader'
         }
@@ -36,8 +36,8 @@ module.exports = {
         test: /.(png|jpe?g|gif)$/,
         use: [
           {
-            loader: 'file-loader',
-          },
+            loader: 'file-loader'
+          }
         ]
       }
     ]

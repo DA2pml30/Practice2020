@@ -19,7 +19,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(glsl|vert|frag)$/,
+        test: /\.(glsl|vert|frag|txt)$/,
         use: {
           loader: 'raw-loader'
         }

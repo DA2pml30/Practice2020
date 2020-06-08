@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js --json > stats.json",
+    "build": "webpack --config webpack.config.js",
     "start-dev": "webpack-dev-server"
   },
   "author": "DA2 CGSG76",
