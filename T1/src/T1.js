@@ -27,15 +27,13 @@ class Graphics {
     document.getElementById('container').appendChild(this.renderer.domElement);
 
     this.sun = new THREE.DirectionalLight(0xffffff, 0.5);
-    this.sun.matrixAutoUpdate = false;
-    this.moon = new THREE.DirectionalLight(0xB5F3FF, 0);
-    this.moon.matrixAutoUpdate = false;
+    this.moon = new THREE.DirectionalLight(0xB5F3FF, 1);
     this.HemisphereLight = new THREE.HemisphereLight(0xfffffff, 0x183d14, 1);
 
     this.scene.add(this.sun);
     this.scene.add(this.moon);
     this.scene.add(this.HemisphereLight);
-    this.scene.fog = new THREE.FogExp2(0xffffff, 0.03);
+    this.fog = this.scene.fog = new THREE.FogExp2(0xffffff, 0.03);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableKeys = false;
@@ -147,7 +145,7 @@ class Graphics {
     }
 
     if (HeightP == undefined) {
-      k = 16;
+      this.HMSize = k = 16;
       k2 = k * k * 3;
       this.HMapData = [];
 
@@ -196,9 +194,10 @@ class Graphics {
         for (let i = 0; i < k2 * 3; i += 3) {
           P[i + 2] = P[i];
           P[i] = P[i + 1];
-          T.HMapData.push(P[i + 1] = (data[i / 3 * Ch] / 255 - 0.5) * 0.3);
+          T.HMapData.push(P[i + 1] = ((data[i / 3 * Ch] + data[i / 3 * Ch + 1] + data[i / 3 * Ch + 2]) / 3 / 255 - 0.5) * 0.3);
         }
 
+        T.HMSize = k;
         T.RegenColors();
 
         if (T.Heightmap != null) {
@@ -341,17 +340,18 @@ class Graphics {
     this.Params = {
       Exposure: 1,
       Operator: THREE.ACESFilmicToneMapping,
-      Scale: this.HMScale
+      Scale: this.HMScale,
+      IsFog: true
     };
 
     this.gui = new dat.GUI();
     this.gui.remember(this.Params);
 
-    const rendererGui = this.gui.addFolder('HDR');
-    rendererGui.add(this.Params, 'Exposure').min(0.1).max(3).step(0.005).onChange(function (value) {
+    const hdrGui = this.gui.addFolder('HDR');
+    hdrGui.add(this.Params, 'Exposure').min(0.1).max(3).step(0.005).onChange(function (value) {
       T.renderer.toneMappingExposure = value;
     });
-    rendererGui.add(this.Params, 'Operator', {
+    hdrGui.add(this.Params, 'Operator', {
       Uncharted2: THREE.Uncharted2ToneMapping,
       Filmic: THREE.ACESFilmicToneMapping,
       Reinhard: THREE.ReinhardToneMapping,
@@ -360,8 +360,16 @@ class Graphics {
     }).onFinishChange(function (value) {
       T.renderer.toneMapping = parseInt(value);
     });
+
     this.gui.add(this.Params, 'Scale').min(64).max(512).step(8).onChange(function (value) {
       T.HMScale = value;
+    });
+    this.gui.add(this.Params, 'IsFog').onChange(function (value) {
+      if (value) {
+        T.scene.fog = T.fog;
+      } else {
+        T.scene.fog = null;
+      }
     });
 
     this.stats = new Stats();
@@ -410,6 +418,49 @@ class Graphics {
     const M = new THREE.Matrix4();
     M.makeRotationY(this.Car.Rotate);
 
+    /* Move on Y */
+    if (Math.abs(this.Car.Pos.x) <= this.HMScale * 0.5 && Math.abs(this.Car.Pos.z) <= this.HMScale * 0.5) {
+      const K = new THREE.Matrix4();
+      const KAxe = new THREE.Vector3(0, 1, 0);
+
+      const narr = this.geometryHM.attributes.normal.array;
+      const normCoeff = new THREE.Vector2(this.HMSize * (0.5 + this.Car.Pos.z / this.HMScale), this.HMSize * (0.5 - this.Car.Pos.x / this.HMScale));
+      const normInd = new THREE.Vector2(Math.floor(normCoeff.x), Math.floor(normCoeff.y));
+      const normInd2 = new THREE.Vector2(Math.min(normInd.x + 1, this.HMSize), Math.min(normInd.y + 1, this.HMSize));
+      normCoeff.sub(normInd);
+      const b1 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd.x) * 3],
+        narr[(normInd.y * this.HMSize + normInd.x) * 3 + 1],
+        narr[(normInd.y * this.HMSize + normInd.x) * 3 + 2]);
+      const b2 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd2.x) * 3],
+        narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 1],
+        narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 2]);
+      const b3 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd.x) * 3],
+        narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 1],
+        narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 2]);
+      const b4 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd2.x) * 3],
+        narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 1],
+        narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 2]);
+
+      const N = new THREE.Vector3(b1.x, b1.y, b1.z);
+
+      N.add(b4.add(b1).sub(b2).sub(b3).multiplyScalar(normCoeff.x).multiplyScalar(normCoeff.y)).add(b2.sub(b1).multiplyScalar(normCoeff.x)).add(b3.sub(b1).multiplyScalar(normCoeff.y));
+
+      K.makeRotationAxis(KAxe.crossVectors(Ya, N.normalize()), Ya.dot(N));
+      K.multiply(M);
+      M.copy(K);
+
+      const parr = this.geometryHM.attributes.position.array;
+      const c1 = parr[(normInd.y * this.HMSize + normInd.x) * 3 + 1];
+      const c2 = parr[(normInd.y * this.HMSize + normInd2.x) * 3 + 1];
+      const c3 = parr[(normInd2.y * this.HMSize + normInd.x) * 3 + 1];
+      const c4 = parr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 1];
+      const TargetY = this.HMScale * (c1 + (c2 - c1) * normCoeff.x + (c3 - c1) * normCoeff.y + (c4 - c3 - c2 + c1) * normCoeff.x * normCoeff.y);
+
+      this.Car.Pos.y += Math.sign(TargetY - this.Car.Pos.y) * Math.min(Math.abs(TargetY - this.Car.Pos.y), this.HMScale * this.DeltaT);
+    } else {
+      this.Car.Pos.setComponent(1, 0);
+    }
+
     this.Car.Model.matrix.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z);
     this.Car.Model.matrix.multiply(M);
     this.Car.Model.position.copy(this.Car.Pos);
@@ -445,16 +496,15 @@ class Graphics {
     const V = new THREE.Vector3(0, Math.sin(a), Math.cos(a));
     const X = new THREE.Vector3(1, 0, 0);
     const M = new THREE.Matrix4();
-    const R = new THREE.Matrix4();
     const OSun = new THREE.Matrix4();
     const OMoon = new THREE.Matrix4();
 
-    M.makeTranslation(-100, 0, 0);
-    R.makeRotationZ(Math.PI / 2);
+    M.makeTranslation(-this.HMScale, 0, 0);
     OSun.makeRotationAxis(V.cross(X), T);
     OMoon.makeRotationAxis(V, T + Math.PI);
-    this.sun.matrix.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z).multiply(OSun).multiply(M).multiply(R);
-    this.moon.matrix.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z).multiply(OMoon).multiply(M).multiply(R);
+
+    this.sun.position.set(-this.HMScale, 0, 0).applyMatrix4(OSun).add(this.Car.Pos);
+    this.moon.position.set(-this.HMScale, 0, 0).applyMatrix4(OMoon).add(this.Car.Pos);
 
     // Colors
     if (Math.sin(T) < 0) {
@@ -466,16 +516,16 @@ class Graphics {
     const Day = Math.clamp((Math.PI / 3 - Math.abs(Math.PI / 2 - T)) / Math.PI * 6, 0, 1);
     const Night = Math.clamp((Math.PI / 3 - Math.abs(Math.PI * 1.5 - T)) / Math.PI * 6, 0, 1);
 
-    this.sun.Intensity = (1 - Night) * 3;
-    this.moon.Intensity = Night * 3;
-    this.scene.fog.density = (1 - Day) * 0.03;
+    this.sun.intensity = (1 - Night);
+    this.moon.intensity = Night * 0.030;
+    this.fog.density = (1 - Day) * 0.03;
 
     const MorningC = new THREE.Vector3(203, 178, 255);
-    const EveningC = new THREE.Vector3(255, 76, 0);
+    const EveningC = new THREE.Vector3(255, 76, 20);
     const DayC = new THREE.Vector3(200, 230, 255);
     const NightC = new THREE.Vector3(38, 42, 76);
     const MorningL = new THREE.Vector3(255, 232, 170);
-    const EveningL = new THREE.Vector3(255, 76, 0);
+    const EveningL = new THREE.Vector3(255, 76, 20);
     const DayL = new THREE.Vector3(255, 255, 255);
     const B = new THREE.Vector3();
     const L = new THREE.Vector3();
@@ -483,7 +533,8 @@ class Graphics {
     B.copy(MorningC.multiplyScalar(Morning)).add(EveningC.multiplyScalar(Evening)).add(DayC.multiplyScalar(Day)).add(NightC.multiplyScalar(Night));
     L.copy(MorningL.multiplyScalar(Morning)).add(EveningL.multiplyScalar(Evening)).add(DayL.multiplyScalar(Day));
 
-    this.scene.fog.color.copy(this.HemisphereLight.groundColor.copy(this.HemisphereLight.color.copy(this.scene.background = new THREE.Color(B.x / 255, B.y / 255, B.z / 255))));
+    this.fog.color.copy(this.HemisphereLight.groundColor.copy(this.HemisphereLight.color.copy(this.scene.background = new THREE.Color(B.x / 255, B.y / 255, B.z / 255))));
+
     this.sun.color.setRGB(L.x / 255, L.y / 255, L.z / 255);
   }
 
@@ -578,6 +629,16 @@ class Graphics {
 
       T.renderer.setSize(T.W, T.H);
     }, false);
+
+    document.getElementById('files').onchange = function (evt) {
+      const file = evt.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = function () {
+        T.Regenerate(reader.result);
+      };
+      reader.readAsDataURL(file);
+    };
   }
 }
 
