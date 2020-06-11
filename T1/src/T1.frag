@@ -1,10 +1,3 @@
-uniform float time;
-uniform float W;
-uniform float H;
-uniform vec3 L;
-
-uniform sampler2D uSampler;
-
 varying float y;
 
 float smax( float a, float b )
