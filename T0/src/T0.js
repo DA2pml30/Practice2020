@@ -125,7 +125,10 @@ class webGL {
   }
 
   initTextures = (GradP) => {
-    this.TextureGrad = this.loadTexture(GradP);
+    const Tex = this.loadTexture(GradP);
+    if (this.TextureGrad != undefined)
+      delete this.TextureGrad;
+    this.TextureGrad = Tex;
   }
 
   initBuffers = () => {
@@ -247,7 +250,18 @@ class webGL {
 
     }, false);
 
+    document.getElementById('files').onchange = function (evt) {
+      const file = evt.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = function () {
+        T.initTextures(reader.result);
+      };
+      reader.readAsDataURL(file);
+    };
+
     this.initGL(canvas, VSText, FSText);
+    this.TextureGrad = undefined;
     this.initTextures(GradP);
     this.initShaders();
     this.initBuffers();

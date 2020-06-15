@@ -11,9 +11,16 @@ import HeightP from '../bin/Height.png';
 import hash from '../../hash.txt';
 import Sky from '../bin/Skybox.hdr';
 import LoadP from '../bin/Loading.jpg';
+import smoke0 from '../bin/Smoke0.png';
+import smoke1 from '../bin/Smoke1.png';
+import smoke2 from '../bin/Smoke2.png';
+import smoke3 from '../bin/Smoke3.png';
 
 Math.clamp = function (a, b, c) {
   return Math.max(b, Math.min(c, a));
+};
+Math.lerp = function (a, b, x) {
+  return a + x * (b - a);
 };
 
 class Graphics {
@@ -26,9 +33,18 @@ class Graphics {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     document.getElementById('container').appendChild(this.renderer.domElement);
 
+    this.renderer.shadowMap.enabled = true;
+
     this.sun = new THREE.DirectionalLight(0xffffff, 0.5);
     this.moon = new THREE.DirectionalLight(0xB5F3FF, 1);
     this.HemisphereLight = new THREE.HemisphereLight(0xfffffff, 0x183d14, 1);
+
+    this.sun.castShadow = true;
+    this.sun.shadow.mapSize.width = this.sun.shadow.mapSize.height = 4096;
+    this.sun.shadow.camera.top = this.sun.shadow.camera.right = 32;
+    this.sun.shadow.camera.left = -this.sun.shadow.camera.right;
+    this.sun.shadow.camera.bottom = -this.sun.shadow.camera.top;
+    this.sun.shadow.bias = -0.0005;
 
     this.scene.add(this.sun);
     this.scene.add(this.moon);
@@ -220,8 +236,87 @@ class Graphics {
     this.Heightmap.frustumCulled = false;
 
     this.scene.add(this.Heightmap);
+    this.Heightmap.castShadow = true;
+    this.Heightmap.receiveShadow = true;
 
     this.Regenerate(HeightP);
+  }
+
+  initParticles (smoke) {
+    this.Particles = {
+      array: [],
+      maxTime: 2,
+      deltaCreate: 0.025,
+      Car: this.Car,
+      scene: this.scene,
+      camera: this.controls,
+      material: [],
+      dtime: 0,
+      addParticle: function () {
+        const P = {
+          velocity: this.Car.V + 5,
+          Matr: new THREE.Matrix4(),
+          time: 0,
+          mesh: null,
+          x: 0,
+          CarTr: new THREE.Matrix4(),
+          base: new THREE.Vector3(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)
+        };
+        P.base.multiplyScalar(0.3);
+        P.Matr.copy(this.Car.RotateMatr);
+        P.CarTr.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z);
+
+        P.mesh = new THREE.Sprite(this.material[Math.floor(Math.random() * this.material.length)]);
+        P.mesh.matrix = new THREE.Matrix4();
+        P.mesh.matrixAutoUpdate = false;
+
+        this.array.push(P);
+        this.scene.add(P.mesh);
+      },
+      onUpdate: function (deltaTime) {
+        if (this.Car.Model == null) {
+          return;
+        }
+
+        this.dtime += deltaTime;
+
+        while (this.array.length > 0 && this.array[0].time + deltaTime > this.maxTime) {
+          this.scene.remove(this.array[0].mesh);
+          this.array.shift();
+        }
+
+        while (this.dtime > this.deltaCreate) {
+          this.addParticle();
+          this.dtime -= this.deltaCreate;
+        }
+
+        let i;
+        for (i = 0; i < this.array.length; i++) {
+          const P = this.array[i];
+          P.time += deltaTime;
+
+          const Scale = new THREE.Matrix4();
+          const kScale = Math.lerp(1, 2, P.time / this.maxTime);
+          Scale.makeScale(kScale, kScale, 1);
+
+          const Tr = new THREE.Matrix4();
+          P.velocity += Math.max(-deltaTime * P.velocity * P.velocity * 0.7, -P.velocity);
+          P.x += P.velocity * deltaTime;
+          Tr.makeTranslation(-0.3 + P.base.x, 0 + P.base.y, P.x + P.base.z);
+          P.mesh.matrix.makeTranslation(0, -0.5 * P.time + 0.5, 0).multiply(P.CarTr).multiply(P.Matr).multiply(Tr).multiply(Scale);
+        }
+      }
+    };
+
+    let i;
+    for (i = 0; i < smoke.length; i++) {
+      const Tex = THREE.ImageUtils.loadTexture(smoke[i]);
+      this.Particles.material.push(new THREE.SpriteMaterial({
+        map: Tex,
+        transparent: true,
+        fog: true
+      }));
+    }
   }
 
   initCar () {
@@ -254,20 +349,24 @@ class Graphics {
             node.material.envMap = env;
           }
         });
-      }
+      },
+      RotateMatr: new THREE.Matrix4()
     };
   }
 
-  loadCar (CarM, envMap) {
+  loadCar (CarM, smoke) {
     const loader = new GLTFLoader();
     const T = this;
 
     loader.load(CarM, function (gltf) {
       T.Car.Model = gltf.scene;
 
-      if (T.envMap != undefined) {
-        T.Car.OnEnvMap(T.envMap);
-      }
+      T.Car.Model.traverse(function (o) {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+        }
+      });
 
       const Bones = gltf.scene.children[0].children;
       let L;
@@ -332,6 +431,8 @@ class Graphics {
       alert('Error!');
       console.error(error);
     });
+
+    T.initParticles(smoke);
   }
 
   initGUI () {
@@ -341,7 +442,8 @@ class Graphics {
       Exposure: 1,
       Operator: THREE.ACESFilmicToneMapping,
       Scale: this.HMScale,
-      IsFog: true
+      IsFog: true,
+      RotateCar: true
     };
 
     this.gui = new dat.GUI();
@@ -370,6 +472,9 @@ class Graphics {
       } else {
         T.scene.fog = null;
       }
+    });
+    this.gui.add(this.Params, 'RotateCar').onChange(function (value) {
+      T.Params.RotateCar = value;
     });
 
     this.stats = new Stats();
@@ -428,26 +533,29 @@ class Graphics {
       const normInd = new THREE.Vector2(Math.floor(normCoeff.x), Math.floor(normCoeff.y));
       const normInd2 = new THREE.Vector2(Math.min(normInd.x + 1, this.HMSize), Math.min(normInd.y + 1, this.HMSize));
       normCoeff.sub(normInd);
-      const b1 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd.x) * 3],
-        narr[(normInd.y * this.HMSize + normInd.x) * 3 + 1],
-        narr[(normInd.y * this.HMSize + normInd.x) * 3 + 2]);
-      const b2 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd2.x) * 3],
-        narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 1],
-        narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 2]);
-      const b3 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd.x) * 3],
-        narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 1],
-        narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 2]);
-      const b4 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd2.x) * 3],
-        narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 1],
-        narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 2]);
 
-      const N = new THREE.Vector3(b1.x, b1.y, b1.z);
+      if (this.Params.RotateCar) {
+        const b1 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd.x) * 3],
+          narr[(normInd.y * this.HMSize + normInd.x) * 3 + 1],
+          narr[(normInd.y * this.HMSize + normInd.x) * 3 + 2]);
+        const b2 = new THREE.Vector3(narr[(normInd.y * this.HMSize + normInd2.x) * 3],
+          narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 1],
+          narr[(normInd.y * this.HMSize + normInd2.x) * 3 + 2]);
+        const b3 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd.x) * 3],
+          narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 1],
+          narr[(normInd2.y * this.HMSize + normInd.x) * 3 + 2]);
+        const b4 = new THREE.Vector3(narr[(normInd2.y * this.HMSize + normInd2.x) * 3],
+          narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 1],
+          narr[(normInd2.y * this.HMSize + normInd2.x) * 3 + 2]);
 
-      N.add(b4.add(b1).sub(b2).sub(b3).multiplyScalar(normCoeff.x).multiplyScalar(normCoeff.y)).add(b2.sub(b1).multiplyScalar(normCoeff.x)).add(b3.sub(b1).multiplyScalar(normCoeff.y));
+        const N = new THREE.Vector3(b1.x, b1.y, b1.z);
 
-      K.makeRotationAxis(KAxe.crossVectors(Ya, N.normalize()), Ya.dot(N));
-      K.multiply(M);
-      M.copy(K);
+        N.add(b4.add(b1).sub(b2).sub(b3).multiplyScalar(normCoeff.x).multiplyScalar(normCoeff.y)).add(b2.sub(b1).multiplyScalar(normCoeff.x)).add(b3.sub(b1).multiplyScalar(normCoeff.y));
+
+        K.makeRotationAxis(KAxe.crossVectors(Ya, N.normalize()), Ya.dot(N));
+        K.multiply(M);
+        M.copy(K);
+      }
 
       const parr = this.geometryHM.attributes.position.array;
       const c1 = parr[(normInd.y * this.HMSize + normInd.x) * 3 + 1];
@@ -460,6 +568,8 @@ class Graphics {
     } else {
       this.Car.Pos.setComponent(1, 0);
     }
+
+    this.Car.RotateMatr.copy(M);
 
     this.Car.Model.matrix.makeTranslation(this.Car.Pos.x, this.Car.Pos.y, this.Car.Pos.z);
     this.Car.Model.matrix.multiply(M);
@@ -486,6 +596,8 @@ class Graphics {
 
     this.camera.position.add(P);
     this.controls.target.copy(this.Car.Pos);
+
+    this.Particles.onUpdate(this.DeltaT);
   }
 
   sunMove () {
@@ -499,12 +611,12 @@ class Graphics {
     const OSun = new THREE.Matrix4();
     const OMoon = new THREE.Matrix4();
 
-    M.makeTranslation(-this.HMScale, 0, 0);
+    M.makeTranslation(-10, 0, 0);
     OSun.makeRotationAxis(V.cross(X), T);
     OMoon.makeRotationAxis(V, T + Math.PI);
 
-    this.sun.position.set(-this.HMScale, 0, 0).applyMatrix4(OSun).add(this.Car.Pos);
-    this.moon.position.set(-this.HMScale, 0, 0).applyMatrix4(OMoon).add(this.Car.Pos);
+    this.sun.position.set(-64, 0, 0).applyMatrix4(OSun).add(this.Car.Pos);
+    this.moon.position.set(-64, 0, 0).applyMatrix4(OMoon).add(this.Car.Pos);
 
     // Colors
     if (Math.sin(T) < 0) {
@@ -539,10 +651,6 @@ class Graphics {
   }
 
   drawScene () {
-    this.DeltaT = this.IsNPause * (Date.now() / 1000 - this.globalMs);
-    this.timeMs += this.DeltaT;
-    this.globalMs = Date.now() / 1000;
-
     this.stats.update();
 
     if (this.envMap == undefined || this.Car.Model == null) {
@@ -557,6 +665,14 @@ class Graphics {
       return;
     }
 
+    if (this.init == false) {
+      this.globalMs = Date.now() / 1000;
+    }
+    this.DeltaT = this.IsNPause * (Date.now() / 1000 - this.globalMs);
+    this.timeMs += this.DeltaT;
+    this.globalMs = Date.now() / 1000;
+    this.init = true;
+
     this.moveCar();
     this.sunMove();
     this.Heightmap.scale.set(this.HMScale, this.HMScale, this.HMScale);
@@ -564,7 +680,8 @@ class Graphics {
     this.renderer.render(this.scene, this.camera);
   }
 
-  constructor (HeightP, CarM, Sky, LoadP) {
+  constructor (HeightP, CarM, Sky, LoadP, smoke) {
+    this.init = false;
     this.IsNPause = true;
     this.timeMs = 0;
     this.globalMs = Date.now() / 1000;
@@ -580,7 +697,7 @@ class Graphics {
     this.initHeightmap(HeightP);
     this.initCar();
     this.initGUI();
-    this.loadCar(CarM);
+    this.loadCar(CarM, smoke);
 
     const T = this;
     this.envMap = undefined;
@@ -642,7 +759,7 @@ class Graphics {
   }
 }
 
-const Cars = new Graphics(HeightP, CarM, Sky, LoadP);
+const Cars = new Graphics(HeightP, CarM, Sky, LoadP, [smoke0, smoke1, smoke2, smoke3]);
 
 function Run () {
   requestAnimationFrame(Run);

@@ -41,12 +41,36 @@ input[type=number]
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
   transition: 0.5s;
-  background: Oldlace;
+  background: rgb(255, 228, 220);
+}
+
+label {
+  height: 30px;
+  text-align: center;
+  border: 3px solid rgb(85, 87, 190);
+  outline: none;
+  box-sizing: border-box;
+  padding: 0.5px 5px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  transition: 0.5s;
+  background: rgb(211, 234, 255);
+  cursor: pointer;
+}
+
+label:hover
+{
+  border: 3px solid #280a3a;
 }
 
 input[type=number]:focus
 {
   border-color: #3A1B0A;
+}
+
+input[type=file]
+{
+  display: none;
 }
         </style>
     </head><body>
@@ -55,6 +79,8 @@ input[type=number]:focus
         <br/>
         <p>P - pause. 0 - go back to start position.
           <input type="number" style="width: 200px;" placeholder="Max iterations:" value="" id="Iter"> Now: <span id="IterN"></span>
+          <label for="files">Upload gradient...</label>
+          <input id="files" type="file"/>
         </p>
     </body>
 </html>
